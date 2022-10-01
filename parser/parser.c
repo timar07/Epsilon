@@ -171,6 +171,19 @@ lookahead(Parser *self, size_t n, Eps_TokenType tok)
     return ((Eps_Token *)current->data)->toktype == tok;
 }
 
+// Check if token is valid type specifier
+static bool
+is_type_specifier(Eps_TokenType tok)
+{
+    switch (tok) {
+        case REAL: case STRING:
+        case BOOL: case VOID:
+            return true;
+    }
+
+    return false;
+}
+
 // * - Expressions Constructors -
 
 static Eps_Expression*
@@ -281,6 +294,30 @@ expr_to_string(Eps_Expression *expr)
             switch (expr->primary->type) {
                 case PRIMARY_LIT:
                 {
+                    switch (expr->primary->literal->type) {
+                        case OBJ_BOOL:
+                            sprintf(
+                                result,
+                                "%s",
+                                *(bool *)expr->primary->literal->value ?
+                                    "true": "false"
+                            );
+                        break;
+                        case OBJ_REAL:
+                            sprintf(
+                                result,
+                                "%f",
+                                *(double *)expr->primary->literal->value
+                            );
+                        break;
+                        case OBJ_STRING:
+                            sprintf(
+                                result,
+                                "%s",
+                                (char *)expr->primary->literal->value
+                            );
+                        break;
+                    }
                     sprintf(
                         result,
                         "%f",
@@ -444,7 +481,7 @@ primary(Parser *self)
         expr->primary = create_literal_node(NULL);
     }
     else if (check(self, TRUE) || check(self, FALSE)) {
-        Eps_Token* t = current(self);
+        Eps_Token* t = advance(self);
         bool* val = Eps_AllocMem(sizeof(bool));
 
         if (t->toktype == TRUE) {
@@ -453,8 +490,9 @@ primary(Parser *self)
             *val = false;
         }
 
-        // TODO: Booleans
-        // expr->primary = create_literal_node(t->literal);
+        expr->primary = create_literal_node(
+            Eps_ObjectCreate(OBJ_BOOL, val, false)
+        );
     }
     else if (match(self, L_PAREN)) {
         expr->primary = create_parenthesized_node(
@@ -472,8 +510,8 @@ primary(Parser *self)
 static Eps_Expression*
 unary(Parser *self)
 {
-    // unary = ('+' | '-') primary;
-    if (check(self, MINUS) || check(self, BANG)) {
+    // unary = '-' primary;
+    if (check(self, MINUS)) {
         Eps_Expression* expr = create_expression();
 
         Eps_Token* operator = advance(self);
@@ -669,8 +707,7 @@ stmt_func(Parser *self)
 
     parse_required(self, ARROW_RIGHT);
 
-    if(check(self, REAL) ||
-       check(self, VOID)) {
+    if(is_type_specifier(current(self)->toktype)) {
         stmt->func->type = parse_type_spec(advance(self));
         stmt->func->body = statement(self);
     } else {

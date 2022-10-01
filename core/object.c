@@ -4,6 +4,7 @@
 static const char * obj_strings[] = {
     "real",
     "string",
+    "bool",
     "void"
 };
 

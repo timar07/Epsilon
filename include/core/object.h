@@ -6,6 +6,7 @@
 typedef enum {
     OBJ_REAL,
     OBJ_STRING,
+    OBJ_BOOL,
     OBJ_VOID,
 } Eps_ObjectType;
 

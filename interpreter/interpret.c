@@ -79,6 +79,15 @@ create_number(double val)
 }
 
 static Eps_Object *
+create_boolean(bool val)
+{
+    double *obj_val = Eps_AllocMem(sizeof(bool));
+    *obj_val = val;
+
+    return Eps_ObjectCreate(OBJ_BOOL, obj_val, true);
+}
+
+static Eps_Object *
 create_string(char *str)
 {
     return Eps_ObjectCreate(OBJ_STRING, str, true);
@@ -99,8 +108,12 @@ static Eps_Object *
 visit_ternary(Eps_Env *env, Eps_AstTernaryNode* node)
 {
     _DEBUG("%*sTERNARY\n", 8, "");
-    // TODO: Type check
     Eps_Object *cond = expression(env, node->cond);
+
+    if (cond->type != OBJ_BOOL) {
+        // TODO: Throw runtime error
+        return create_void();
+    }
 
     if (*(double *)cond->value) {
         return expression(env, node->left);
@@ -152,42 +165,42 @@ visit_binary(Eps_Env *env, Eps_AstBinNode* node)
 
             case EQUAL:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value == *(double *)right->value
                 );
             }
 
             case BANG_EQUAL:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value != *(double *)right->value
                 );
             }
 
             case LESS_EQUAL:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value <= *(double *)right->value
                 );
             }
 
             case GREATER_EQUAL:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value >= *(double *)right->value
                 );
             }
 
             case LESS:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value < *(double *)right->value
                 );
             }
 
             case GREATER:
             {
-                return create_number(
+                return create_boolean(
                     *(double *)left->value > *(double *)right->value
                 );
             }
@@ -245,7 +258,7 @@ visit_unary(Eps_Env *env, Eps_AstUnaryNode* node)
     Eps_Object *right = expression(env, node->right);
 
     if (right->type == OBJ_VOID) {
-        return right;
+        return create_void();
     }
 
     switch (right->type) {
@@ -264,6 +277,17 @@ visit_unary(Eps_Env *env, Eps_AstUnaryNode* node)
     switch (node->operator->toktype) {
         case MINUS:
         {
+            if (right->type != OBJ_REAL) {
+                runtime_error(
+                    &node->operator->ls,
+                    "cannot apply %s to expression type %s",
+                    node->operator->lexeme,
+                    EpsDbg_GetObjectTypeString(right->type)
+                );
+
+                return create_void();
+            }
+
             return create_number(- *(double *)right->value);
         } break;
         default: break;
@@ -440,31 +464,27 @@ visit_group(Eps_Env *env, Eps_StatementGroup *stmt)
 static StmtResult *
 visit_if(Eps_Env *env, Eps_StatementConditional *stmt)
 {
-    Eps_Object *condition = expression(env, stmt->cond);
+    Eps_Object *cond = expression(env, stmt->cond);
 
-    switch (condition->type) {
-        case OBJ_REAL:
-        {
-            if (*(double *)condition->value) {
-                return statement(env, stmt->body);
-            } else if (stmt->_else != NULL) {
-                return statement(env, stmt->_else);
-            }
-        } break;
+    if (cond->type != OBJ_BOOL) {
+        runtime_error(
+            &stmt->keyword->ls,
+            "invalid cond type '%s'",
+            EpsDbg_GetObjectTypeString(cond->type)
+        );
 
-        case OBJ_VOID:
-        case OBJ_STRING:
-        {
-            runtime_error(
-                &stmt->keyword->ls,
-                "invalid condition type '%s'",
-                EpsDbg_GetObjectTypeString(condition->type)
-            );
-        } break;
+        Eps_ObjectDestroy(cond);
+        return stmt_res_noop();
     }
 
-    Eps_ObjectDestroy(condition);
 
+    if (*(double *)cond->value) {
+        return statement(env, stmt->body);
+    } else if (stmt->_else != NULL) {
+        return statement(env, stmt->_else);
+    }
+
+    Eps_ObjectDestroy(cond);
     return stmt_res_noop();
 }
 
@@ -473,12 +493,19 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
 {
     Eps_Object *val = expression(env, stmt->expr);
 
+
     switch (val->type) {
         case OBJ_STRING:
             printf("%s\n", (char *)val->value);
         break;
         case OBJ_REAL:
             printf("%f\n", *(double *)val->value);
+        break;
+        case OBJ_BOOL:
+            printf(
+                "%s\n",
+                *(bool *)val->value ? "true": "false"
+            );
         break;
         case OBJ_VOID:
             runtime_error(

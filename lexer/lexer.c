@@ -235,6 +235,9 @@ identifier(Eps_LexState *ls)
     else if (lexeme_cmp(lexeme, "or")) {
         return OR;
     }
+    else if (lexeme_cmp(lexeme, "not")) {
+        return NOT;
+    }
     else if (lexeme_cmp(lexeme, "output")) {
         return OUTPUT;
     }
@@ -243,6 +246,9 @@ identifier(Eps_LexState *ls)
     }
     else if (lexeme_cmp(lexeme, "real")) {
         return REAL;
+    }
+    else if (lexeme_cmp(lexeme, "bool")) {
+        return BOOL;
     }
     else if (lexeme_cmp(lexeme, "true")) {
         return TRUE;
