@@ -56,10 +56,10 @@ print_context(Eps_LexState *ls)
         end++;
 
 
-	strsz = end - start + 1;
+	strsz = end - start;
 
-	line = Eps_AllocMem(sizeof(char)*strsz);
-	memcpy(line, &ls->input->raw[start], strsz-1);
+	line = Eps_AllocMem(sizeof(char)*(strsz+1));
+	memcpy(line, &ls->input->raw[start], strsz);
 	line[strsz] = '\0';
 
     printf(

@@ -617,7 +617,17 @@ static Eps_Expression *
 expression(Parser *self)
 {
     Eps_Expression *expr;
-    expr = ternary(self);
+    Eps_LexState ls;
+
+    ls = current(self)->ls; // saving current token lexstate
+    expr = ternary(self);   // parsing
+
+    // include only one line of expression
+    if (prev(self)->ls.line == ls.line) {
+        // expression end is an enclosing token end
+        ls.end = prev(self)->ls.end;
+    }
+    expr->ls = ls; // attaching lexstate to the expression
 
 #ifdef EPS_DBG
     expr->debug_string = expr_to_string(expr);

@@ -468,8 +468,8 @@ visit_if(Eps_Env *env, Eps_StatementConditional *stmt)
 
     if (cond->type != OBJ_BOOL) {
         runtime_error(
-            &stmt->keyword->ls,
-            "invalid cond type '%s'",
+            &stmt->cond->ls,
+            "invalid condition type '%s'",
             EpsDbg_GetObjectTypeString(cond->type)
         );
 

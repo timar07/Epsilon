@@ -15,6 +15,7 @@ typedef enum {
 
 struct Eps_AstNode {
     Eps_AstNodeType type;
+    Eps_LexState ls;
 
     union {
         Eps_AstPrimaryNode *primary;
