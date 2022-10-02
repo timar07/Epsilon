@@ -106,7 +106,7 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
         break;
         case OBJ_VOID:
             EpsErr_RuntimeError(
-                &stmt->keyword->ls,
+                &stmt->expr->ls,
                 "cannot output value type of 'void'"
             );
     }
