@@ -253,13 +253,21 @@ visit_call(Eps_Env *env, Eps_AstPrimaryNode *node)
         return create_void();
     }
 
-    // function return value
-    StmtResult *ret = Eps_RunStatement(func_env, func->body);
+    StmtResult *stmt_res = Eps_RunStatement(func_env, func->body);
     Eps_Object *val;
 
+    // if function returned value
+    if (stmt_res->type == STMT_RES_RET) {
+        val = stmt_res->ret.val;
 
-    if (ret->type == STMT_RES_RET) {
-        val = ret->ret.val;
+        if (val->type != func->type) {
+            EpsErr_RuntimeError(
+                &stmt_res->ret.stmt->expr->ls,
+                "cannot return '%s' from a function type '%s'",
+                EpsDbg_GetObjectTypeString(val->type),
+                EpsDbg_GetObjectTypeString(func->type)
+            );
+        }
     } else {
         val = create_void();
     }
