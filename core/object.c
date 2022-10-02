@@ -1,5 +1,6 @@
 #include "core/object.h"
 #include "core/memory.h"
+#include <string.h>
 
 static const char * obj_strings[] = {
     "real",
@@ -22,7 +23,7 @@ Eps_ObjectCreate(Eps_ObjectType type, void *val, bool mut)
 Eps_Object *
 Eps_ObjectClone(Eps_Object *obj)
 {
-    void *val;
+    void *val = NULL;
 
     switch (obj->type) {
         case OBJ_REAL:
@@ -32,7 +33,8 @@ Eps_ObjectClone(Eps_Object *obj)
         } break;
         case OBJ_STRING:
         {
-
+            val = Eps_AllocMem(sizeof(char)*strlen(obj->value));
+            strcpy(val, obj->value);
         } break;
         default: break;
     }

@@ -11,8 +11,7 @@
 // * - Private Types -
 typedef struct {
     enum {
-        STMT_RES_NOOP = 0,
-        STMT_RES_RET,
+        STMT_RES_RET = 0,
     } type;
 
     union {
@@ -20,8 +19,6 @@ typedef struct {
             Eps_StatementReturn *stmt;
             Eps_Object *val;
         } ret;
-
-        void *noop;
     };
 } StmtResult;
 
@@ -29,17 +26,6 @@ static StmtResult *
 stmt_res_create(void)
 {
     return Eps_AllocMem(sizeof(StmtResult));
-}
-
-static StmtResult *
-stmt_res_noop(void)
-{
-    StmtResult *stmt_res = stmt_res_create();
-
-    stmt_res->type = STMT_RES_NOOP;
-    stmt_res->noop = NULL;
-
-    return stmt_res;
 }
 
 static StmtResult *
@@ -435,7 +421,7 @@ visit_expr_stmt(Eps_Env *env, Eps_StatementExpr *stmt)
 {
     expression(env, stmt->expr);
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -453,12 +439,12 @@ visit_group(Eps_Env *env, Eps_StatementGroup *stmt)
         res = statement(block_env, node->data);
         node = node->next; // keep moving on
 
-        if (res->type != STMT_RES_NOOP) return res;
+        if (res != NULL) return res;
     }
 
     // Eps_EnvDestroy(block_env);
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -474,7 +460,7 @@ visit_if(Eps_Env *env, Eps_StatementConditional *stmt)
         );
 
         Eps_ObjectDestroy(cond);
-        return stmt_res_noop();
+        return NULL;
     }
 
 
@@ -485,7 +471,7 @@ visit_if(Eps_Env *env, Eps_StatementConditional *stmt)
     }
 
     Eps_ObjectDestroy(cond);
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -516,7 +502,7 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
 
     Eps_ObjectDestroy(val);
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -544,7 +530,7 @@ visit_func(Eps_Env *env, Eps_StatementFunc *stmt)
         );
     }
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -576,7 +562,7 @@ visit_const(Eps_Env *env, Eps_StatementVar *stmt)
         );
     }
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -610,7 +596,7 @@ visit_define(Eps_Env *env, Eps_StatementVar *stmt)
         );
     }
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -628,7 +614,7 @@ visit_assign(Eps_Env *env, Eps_StatementVar *stmt)
             stmt->identifier->lexeme
         );
 
-        return stmt_res_noop();
+        return NULL;
     }
 
     // check if types matches
@@ -640,7 +626,7 @@ visit_assign(Eps_Env *env, Eps_StatementVar *stmt)
             EpsDbg_GetObjectTypeString(ref_val->type)
         );
 
-        return stmt_res_noop();
+        return NULL;
     }
 
     // if reference value is not mutable
@@ -651,13 +637,13 @@ visit_assign(Eps_Env *env, Eps_StatementVar *stmt)
             stmt->identifier->lexeme
         );
 
-        return stmt_res_noop();
+        return NULL;
     }
 
     Eps_ObjectDestroy(ref_val);
     *ref_val = *new_val;
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 static StmtResult *
@@ -687,7 +673,7 @@ statement(Eps_Env *env, Eps_Statement *stmt)
         default: break;
     }
 
-    return stmt_res_noop();
+    return NULL;
 }
 
 void

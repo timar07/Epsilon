@@ -179,6 +179,7 @@ is_type_specifier(Eps_TokenType tok)
         case REAL: case STRING:
         case BOOL: case VOID:
             return true;
+        default: break;
     }
 
     return false;
