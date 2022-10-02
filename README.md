@@ -5,7 +5,7 @@ Epsilon is a programming language with tree-walking interpreter written in C.
 `$ make`
 
 ## Usage
-`$ epsilon <filename>.epsilon`
+`$ epsilon <filename>.e`
 
 ## Examples
 ```lua
