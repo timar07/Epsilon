@@ -257,7 +257,7 @@ visit_call(Eps_Env *env, Eps_AstPrimaryNode *node)
     Eps_Object *val;
 
     // if function returned value
-    if (stmt_res->type == STMT_RES_RET) {
+    if (stmt_res && stmt_res->type == STMT_RES_RET) {
         val = stmt_res->ret.val;
 
         if (val->type != func->type) {
