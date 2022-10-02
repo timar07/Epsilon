@@ -1,4 +1,4 @@
-#include "interpret.h"
+#include "interpreter/interpret.h"
 #include "parser.h"
 #include "lexer.h"
 #include "core/ds/dict.h"

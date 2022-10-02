@@ -17,15 +17,15 @@ typedef struct {
 } Eps_Object;
 
 Eps_Object *
-Eps_ObjectCreate(Eps_ObjectType type, void *val, bool mut);
+EpsObject_Create(Eps_ObjectType type, void *val, bool mut);
 
 Eps_Object *
-Eps_ObjectClone(Eps_Object *obj);
+EpsObject_Clone(Eps_Object *obj);
 
 const char *
 EpsDbg_GetObjectTypeString(Eps_ObjectType obj_type);
 
 void
-Eps_ObjectDestroy(Eps_Object *obj);
+EpsObject_Destroy(Eps_Object *obj);
 
 #endif

@@ -6,7 +6,7 @@
 static EpsList_Node *
 create_node(EpsList_Node *prev, EpsList_Node *next, void *data)
 {
-    EpsList_Node *node = Eps_AllocMem(sizeof(EpsList_Node));
+    EpsList_Node *node = EpsMem_Alloc(sizeof(EpsList_Node));
 
     node->prev = prev;
     node->next = next;
@@ -18,7 +18,7 @@ create_node(EpsList_Node *prev, EpsList_Node *next, void *data)
 EpsList *
 EpsList_Create(void)
 {
-    EpsList *list = Eps_AllocMem(sizeof(EpsList));
+    EpsList *list = EpsMem_Alloc(sizeof(EpsList));
     list->head = NULL;
     list->last = NULL;
 
@@ -37,7 +37,7 @@ EpsList_Destroy(EpsList *list, void (*callback)(void *data))
         current = tmp->next;
     }
 
-    Eps_FreeMem(list);
+    EpsMem_Free(list);
 }
 
 void
@@ -63,7 +63,7 @@ EpsList_Pop(EpsList *list)
     void *data = popped->data;
 
     list->last = list->last->prev;
-    Eps_FreeMem(list->last);
+    EpsMem_Free(list->last);
 
     return data;
 }

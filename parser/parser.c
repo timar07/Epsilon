@@ -190,7 +190,7 @@ is_type_specifier(Eps_TokenType tok)
 static Eps_Expression*
 create_expression()
 {
-    return Eps_AllocMem(sizeof(Eps_Expression));
+    return EpsMem_Alloc(sizeof(Eps_Expression));
 }
 
 static Eps_Expression *
@@ -200,7 +200,7 @@ create_ternary_node(Eps_Expression *cond, Eps_Expression *left,
     Eps_Expression* node = create_expression();
 
     node->type = NODE_TERNARY;
-    node->ternary = Eps_AllocMem(sizeof(Eps_AstTernaryNode));
+    node->ternary = EpsMem_Alloc(sizeof(Eps_AstTernaryNode));
     node->ternary->cond = cond;
     node->ternary->left = left;
     node->ternary->right = right;
@@ -215,7 +215,7 @@ create_bin_node(Eps_Token *operator, Eps_Expression *left,
     Eps_Expression* node = create_expression();
 
     node->type = NODE_BIN;
-    node->binary = Eps_AllocMem(sizeof(Eps_AstBinNode));
+    node->binary = EpsMem_Alloc(sizeof(Eps_AstBinNode));
     node->binary->operator = operator;
     node->binary->left = left;
     node->binary->right = right;
@@ -229,7 +229,7 @@ create_unary_node(Eps_Token* operator, Eps_Expression *right)
     Eps_Expression *node = create_expression();
 
     node->type = NODE_UNARY;
-    node->unary = Eps_AllocMem(sizeof(Eps_AstUnaryNode));
+    node->unary = EpsMem_Alloc(sizeof(Eps_AstUnaryNode));
     node->unary->operator = operator;
     node->unary->right = right;
 
@@ -240,7 +240,7 @@ create_unary_node(Eps_Token* operator, Eps_Expression *right)
 static Eps_AstPrimaryNode *
 create_literal_node(Eps_Object *literal)
 {
-    Eps_AstPrimaryNode *node = Eps_AllocMem(sizeof(Eps_AstPrimaryNode));
+    Eps_AstPrimaryNode *node = EpsMem_Alloc(sizeof(Eps_AstPrimaryNode));
 
     node->literal = literal;
     node->type = PRIMARY_LIT;
@@ -251,7 +251,7 @@ create_literal_node(Eps_Object *literal)
 static Eps_AstPrimaryNode *
 create_parenthesized_node(Eps_Expression *expr)
 {
-    Eps_AstPrimaryNode *node = Eps_AllocMem(sizeof(Eps_AstPrimaryNode));
+    Eps_AstPrimaryNode *node = EpsMem_Alloc(sizeof(Eps_AstPrimaryNode));
 
     node->expr = expr;
     node->type = PRIMARY_PAREN;
@@ -262,7 +262,7 @@ create_parenthesized_node(Eps_Expression *expr)
 static Eps_AstPrimaryNode*
 create_identifier_node(Eps_Token *identifier)
 {
-    Eps_AstPrimaryNode* node = Eps_AllocMem(sizeof(Eps_AstPrimaryNode));
+    Eps_AstPrimaryNode* node = EpsMem_Alloc(sizeof(Eps_AstPrimaryNode));
 
     node->identifier = identifier;
     node->type = PRIMARY_ID;
@@ -273,10 +273,10 @@ create_identifier_node(Eps_Token *identifier)
 static Eps_AstPrimaryNode*
 create_call_node(Eps_Token *identifier, EpsList *args)
 {
-    Eps_AstPrimaryNode* node = Eps_AllocMem(sizeof(Eps_AstPrimaryNode));
+    Eps_AstPrimaryNode* node = EpsMem_Alloc(sizeof(Eps_AstPrimaryNode));
 
     node->type = PRIMARY_CALL;
-    node->func = Eps_AllocMem(sizeof(Eps_Call));
+    node->func = EpsMem_Alloc(sizeof(Eps_Call));
     node->func->identifier = identifier;
     node->func->args = args;
 
@@ -287,7 +287,7 @@ create_call_node(Eps_Token *identifier, EpsList *args)
 static char *
 expr_to_string(Eps_Expression *expr)
 {
-    char *result = Eps_AllocMem(sizeof(char)*80);
+    char *result = EpsMem_Alloc(sizeof(char)*80);
 
     switch (expr->type) {
         case NODE_PRIMARY:
@@ -395,22 +395,22 @@ static Eps_Object *
 parse_string(Eps_Token *token)
 {
     size_t len = strlen(token->lexeme)-2;
-    char *literal = Eps_AllocMem(sizeof(char)*(len+1));
+    char *literal = EpsMem_Alloc(sizeof(char)*(len+1));
     memcpy(literal, &token->lexeme[1], len);
     token->lexeme[len+1] = '\0';
 
-    return Eps_ObjectCreate(OBJ_STRING, literal, false);
+    return EpsObject_Create(OBJ_STRING, literal, false);
 }
 
 // Parse number from token->lexeme
 static Eps_Object *
 parse_number(Eps_Token *token)
 {
-    double *val = Eps_AllocMem(sizeof(double));
+    double *val = EpsMem_Alloc(sizeof(double));
 
     *val = strtod(token->lexeme, NULL);
 
-    return Eps_ObjectCreate(OBJ_REAL, val, false);
+    return EpsObject_Create(OBJ_REAL, val, false);
 }
 
 // Parse type specifier
@@ -483,7 +483,7 @@ primary(Parser *self)
     }
     else if (check(self, TRUE) || check(self, FALSE)) {
         Eps_Token* t = advance(self);
-        bool* val = Eps_AllocMem(sizeof(bool));
+        bool* val = EpsMem_Alloc(sizeof(bool));
 
         if (t->toktype == TRUE) {
             *val = true;
@@ -492,7 +492,7 @@ primary(Parser *self)
         }
 
         expr->primary = create_literal_node(
-            Eps_ObjectCreate(OBJ_BOOL, val, false)
+            EpsObject_Create(OBJ_BOOL, val, false)
         );
     }
     else if (match(self, L_PAREN)) {
@@ -645,7 +645,7 @@ expression(Parser *self)
 static Eps_Statement *
 create_statement(void)
 {
-    return Eps_AllocMem(sizeof(Eps_Statement));
+    return EpsMem_Alloc(sizeof(Eps_Statement));
 }
 
 static Eps_Statement *
@@ -660,7 +660,7 @@ stmt_group(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_GROUP;
-    stmt->group = Eps_AllocMem(sizeof(Eps_StatementGroup));
+    stmt->group = EpsMem_Alloc(sizeof(Eps_StatementGroup));
     stmt->group = EpsList_Create();
 
     parse_required(self, L_BRACE);
@@ -679,7 +679,7 @@ stmt_expr(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_EXPR;
-    stmt->expr = Eps_AllocMem(sizeof(Eps_StatementExpr));
+    stmt->expr = EpsMem_Alloc(sizeof(Eps_StatementExpr));
     stmt->expr->expr = expression(self);
 
     parse_required(self, SEMICOLON);
@@ -698,7 +698,7 @@ stmt_func(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_FUNC;
-    stmt->func = Eps_AllocMem(sizeof(Eps_StatementFunc));
+    stmt->func = EpsMem_Alloc(sizeof(Eps_StatementFunc));
     stmt->func->keyword = parse_required(self, FUNC);
     stmt->func->identifier = advance(self);
     stmt->func->params = EpsList_Create();
@@ -737,7 +737,7 @@ stmt_return(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_RETURN;
-    stmt->ret = Eps_AllocMem(sizeof(Eps_StatementReturn));
+    stmt->ret = EpsMem_Alloc(sizeof(Eps_StatementReturn));
     stmt->ret->keyword = parse_required(self, RETURN);
 
     if(!match(self, SEMICOLON)) {
@@ -759,7 +759,7 @@ stmt_const(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_CONST;
-    stmt->define = Eps_AllocMem(sizeof(Eps_StatementVar));
+    stmt->define = EpsMem_Alloc(sizeof(Eps_StatementVar));
     stmt->define->keyword = parse_required(self, CONST);
     stmt->define->identifier = advance(self);
     parse_required(self, COLON);
@@ -780,7 +780,7 @@ stmt_define(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_DEFINE;
-    stmt->define = Eps_AllocMem(sizeof(Eps_StatementVar));
+    stmt->define = EpsMem_Alloc(sizeof(Eps_StatementVar));
     stmt->define->keyword = parse_required(self, LET);
     stmt->define->identifier = advance(self);
     parse_required(self, COLON);
@@ -805,7 +805,7 @@ stmt_assign(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_ASSIGN;
-    stmt->assign = Eps_AllocMem(sizeof(Eps_StatementVar));
+    stmt->assign = EpsMem_Alloc(sizeof(Eps_StatementVar));
     stmt->assign->identifier = advance(self);
     parse_required(self, ARROW_LEFT);
     stmt->assign->expr = expression(self);
@@ -823,7 +823,7 @@ stmt_output(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_OUTPUT;
-    stmt->output = Eps_AllocMem(sizeof(Eps_StatementOutput));
+    stmt->output = EpsMem_Alloc(sizeof(Eps_StatementOutput));
     stmt->output->keyword = parse_required(self, OUTPUT);
     stmt->output->expr = expression(self);
 
@@ -841,7 +841,7 @@ stmt_if(Parser *self)
     Eps_Statement *stmt = create_statement();
 
     stmt->type = S_IF;
-    stmt->conditional = Eps_AllocMem(sizeof(Eps_StatementConditional));
+    stmt->conditional = EpsMem_Alloc(sizeof(Eps_StatementConditional));
     stmt->conditional->keyword = parse_required(self, IF);
     stmt->conditional->cond = expression(self);
     stmt->conditional->body = statement(self);

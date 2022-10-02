@@ -1,3 +1,6 @@
+#ifndef _ENVIROMENT_H
+#   define _ENVIROMENT_H
+
 #include "core/ds/dict.h"
 
 typedef enum {
@@ -26,3 +29,5 @@ Eps_EnvGet(Eps_Env *env, char *identifier);
 
 Eps_Env *
 Eps_EnvCreate(void);
+
+#endif

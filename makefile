@@ -9,7 +9,9 @@ SRCMODULES = core/errors.c core/input.c core/memory.c \
 			 core/ds/list.c core/ds/dict.c core/object.c\
 			 lexer/lexer.c \
 			 parser/parser.c \
-			 interpreter/interpret.c interpreter/enviroment.c
+			 interpreter/interpret.c interpreter/enviroment.c \
+			 interpreter/statements.c interpreter/expressions.c \
+			 interpreter/runtime_errors.c
 
 OBJMODULES = $(SRCMODULES:.c=.o)
 

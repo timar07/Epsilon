@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 Eps_Mem*
-Eps_AllocMem(size_t size)
+EpsMem_Alloc(size_t size)
 {
     Eps_Mem* memptr = malloc(size);
 
@@ -15,7 +15,7 @@ Eps_AllocMem(size_t size)
 }
 
 Eps_Mem*
-Eps_CallocMem(size_t size, size_t n)
+EpsMem_Calloc(size_t size, size_t n)
 {
     Eps_Mem* memptr = calloc(size, n);
 
@@ -27,7 +27,7 @@ Eps_CallocMem(size_t size, size_t n)
 }
 
 Eps_Mem*
-Eps_ReallocMem(Eps_Mem* mem, size_t size)
+EpsMem_Realloc(Eps_Mem* mem, size_t size)
 {
     Eps_Mem* newmem = realloc(mem, size);
 
@@ -39,7 +39,7 @@ Eps_ReallocMem(Eps_Mem* mem, size_t size)
 }
 
 void
-Eps_FreeMem(Eps_Mem* mem)
+EpsMem_Free(Eps_Mem* mem)
 {
     free(mem);
 }

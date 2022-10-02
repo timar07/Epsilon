@@ -1,4 +1,4 @@
-#include "enviroment.h"
+#include "interpreter/enviroment.h"
 #include "core/ds/dict.h"
 #include "core/memory.h"
 #include <stdio.h>
@@ -6,7 +6,7 @@
 Eps_Env *
 Eps_EnvCreate(void)
 {
-    Eps_Env *env = Eps_AllocMem(sizeof(Eps_Env));
+    Eps_Env *env = EpsMem_Alloc(sizeof(Eps_Env));
     env->variables = EpsDict_Create();
 
     return env;
@@ -15,8 +15,8 @@ Eps_EnvCreate(void)
 void
 Eps_EnvDestroy(Eps_Env *env)
 {
-    EpsDict_Destroy(env->variables, (void (*)(void *))(&Eps_ObjectDestroy));
-    Eps_FreeMem(env);
+    EpsDict_Destroy(env->variables, (void (*)(void *))(&EpsObject_Destroy));
+    EpsMem_Free(env);
 }
 
 void

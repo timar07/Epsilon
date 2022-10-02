@@ -1,3 +1,6 @@
+#ifndef EPS_AST
+#   define EPS_AST
+
 #include "lexer.h"
 
 typedef struct Eps_AstPrimaryNode Eps_AstPrimaryNode;
@@ -66,3 +69,5 @@ struct Eps_AstTernaryNode {
     Eps_AstNode *left;
     Eps_AstNode *right;
 };
+
+#endif

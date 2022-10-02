@@ -84,7 +84,7 @@ static char *
 get_substr(Eps_LexState *ls, size_t start, size_t end)
 {
     size_t strsz = sizeof(char)*end-start+1;
-    char *substr = Eps_AllocMem(strsz);
+    char *substr = EpsMem_Alloc(strsz);
 
     memcpy(substr, &ls->input->raw[start], strsz-1);
     substr[strsz] = '\0';
@@ -97,7 +97,7 @@ get_substr(Eps_LexState *ls, size_t start, size_t end)
 Eps_Token *
 Eps_CreateToken(Eps_LexState *ls, Eps_TokenType toktype, char lexeme[])
 {
-    Eps_Token* t = Eps_AllocMem(sizeof(Eps_Token));
+    Eps_Token* t = EpsMem_Alloc(sizeof(Eps_Token));
 
     memcpy(&t->ls, ls, sizeof(Eps_LexState));
     t->toktype = toktype;
@@ -109,8 +109,8 @@ Eps_CreateToken(Eps_LexState *ls, Eps_TokenType toktype, char lexeme[])
 void
 Eps_DestroyToken(Eps_Token *tok)
 {
-    Eps_FreeMem(tok->lexeme);
-    Eps_FreeMem(tok);
+    EpsMem_Free(tok->lexeme);
+    EpsMem_Free(tok);
 }
 
 char *

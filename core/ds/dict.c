@@ -9,7 +9,7 @@
 #define INITIAL_CAPACITY 16
 #define EPS_DICT_MAX_LOAD 0.75
 
-#define ADJUCT_CAPACITY(dict) Eps_ReallocMem(dict, dict->capacity*2);
+#define ADJUCT_CAPACITY(dict) EpsMem_Realloc(dict, dict->capacity*2);
 
 struct eps_dict_item_t {
     char *key;
@@ -49,10 +49,10 @@ get_index(size_t capacity, char *key)
 EpsDict *
 EpsDict_Create(void)
 {
-    EpsDict *dict = Eps_AllocMem(sizeof(EpsDict));
+    EpsDict *dict = EpsMem_Alloc(sizeof(EpsDict));
     dict->length = 0;
     dict->capacity = INITIAL_CAPACITY;
-    dict->items = Eps_CallocMem(sizeof(EpsDict_Item), INITIAL_CAPACITY);
+    dict->items = EpsMem_Calloc(sizeof(EpsDict_Item), INITIAL_CAPACITY);
 
     return dict;
 }
@@ -68,8 +68,8 @@ destroy_dict_items_chain(EpsDict_Item *item, void (*callback)(void *))
 
         // destroying the item
         callback(current->value);
-        Eps_FreeMem(current->key);
-        Eps_FreeMem(current);
+        EpsMem_Free(current->key);
+        EpsMem_Free(current);
 
         current = next;
     }
@@ -84,7 +84,7 @@ EpsDict_Destroy(EpsDict *dict, void (*callback)(void *))
         destroy_dict_items_chain(dict->items[i], callback);
     }
 
-    Eps_FreeMem(dict);
+    EpsMem_Free(dict);
 }
 
 void *
@@ -106,7 +106,7 @@ EpsDict_Get(EpsDict *dict, char *key)
 void
 EpsDict_Set(EpsDict *dict, char *key, void *val)
 {
-    EpsDict_Item *item = Eps_AllocMem(sizeof(EpsDict_Item));
+    EpsDict_Item *item = EpsMem_Alloc(sizeof(EpsDict_Item));
 
     if (dict->length + 1 > dict->capacity * EPS_DICT_MAX_LOAD) {
         ADJUCT_CAPACITY(dict);

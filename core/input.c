@@ -24,8 +24,8 @@ set_input_name(char *name)
 
 void Eps_StartDialog(void (*callback)(Eps_Input*))
 {
-	src = Eps_AllocMem(sizeof(char)*MAX_LINE_LEN*200); /* TODO: buffer */
-	char* line = Eps_AllocMem(sizeof(char)*MAX_LINE_LEN);
+	src = EpsMem_Alloc(sizeof(char)*MAX_LINE_LEN*200); /* TODO: buffer */
+	char* line = EpsMem_Alloc(sizeof(char)*MAX_LINE_LEN);
 	bool is_eof = false;
 
 	set_input_name("stdin");
@@ -42,7 +42,7 @@ Eps_Input *Eps_ReadFile(char* fname)
 {
 	FILE *f;
 	size_t flen;
-	src = Eps_AllocMem(sizeof(Eps_Input));
+	src = EpsMem_Alloc(sizeof(Eps_Input));
 
 	if ((f = fopen(fname, "r")) == NULL) {
 		fprintf(stderr, "cannot open file: %s\n", fname);
@@ -51,7 +51,7 @@ Eps_Input *Eps_ReadFile(char* fname)
 
 	flen = get_file_len(f);
 	fseek(f, 0, SEEK_SET);
-	src->raw = Eps_AllocMem(flen);
+	src->raw = EpsMem_Alloc(flen);
 	src->len = flen/sizeof(char);
 	set_input_name(fname);
 

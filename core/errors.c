@@ -58,7 +58,7 @@ print_context(Eps_LexState *ls)
 
 	strsz = end - start;
 
-	line = Eps_AllocMem(sizeof(char)*(strsz+1));
+	line = EpsMem_Alloc(sizeof(char)*(strsz+1));
 	memcpy(line, &ls->input->raw[start], strsz);
 	line[strsz] = '\0';
 

@@ -10,9 +10,9 @@ static const char * obj_strings[] = {
 };
 
 Eps_Object *
-Eps_ObjectCreate(Eps_ObjectType type, void *val, bool mut)
+EpsObject_Create(Eps_ObjectType type, void *val, bool mut)
 {
-    Eps_Object *obj = Eps_AllocMem(sizeof(obj));
+    Eps_Object *obj = EpsMem_Alloc(sizeof(obj));
     obj->type = type;
     obj->value = val;
     obj->mut = mut;
@@ -21,32 +21,32 @@ Eps_ObjectCreate(Eps_ObjectType type, void *val, bool mut)
 }
 
 Eps_Object *
-Eps_ObjectClone(Eps_Object *obj)
+EpsObject_Clone(Eps_Object *obj)
 {
     void *val = NULL;
 
     switch (obj->type) {
         case OBJ_REAL:
         {
-            val = Eps_AllocMem(sizeof(double));
+            val = EpsMem_Alloc(sizeof(double));
             *(double *)val = *(double *)obj->value;
         } break;
         case OBJ_STRING:
         {
-            val = Eps_AllocMem(sizeof(char)*strlen(obj->value));
+            val = EpsMem_Alloc(sizeof(char)*strlen(obj->value));
             strcpy(val, obj->value);
         } break;
         default: break;
     }
 
-    return Eps_ObjectCreate(obj->type, val, obj->mut);
+    return EpsObject_Create(obj->type, val, obj->mut);
 }
 
 void
-Eps_ObjectDestroy(Eps_Object *obj)
+EpsObject_Destroy(Eps_Object *obj)
 {
-    Eps_FreeMem(obj->value);
-    Eps_FreeMem(obj);
+    EpsMem_Free(obj->value);
+    EpsMem_Free(obj);
 }
 
 const char *
