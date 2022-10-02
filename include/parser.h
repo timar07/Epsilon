@@ -2,6 +2,7 @@
 #   define EPS_PARSER
 
 #include "ast.h"
+#include "core/ds/list.h"
 #include "core/object.h"
 
 typedef Eps_AstNode Eps_Expression;

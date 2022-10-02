@@ -2,6 +2,7 @@
 #include "core/object.h"
 #include "core/memory.h"
 #include "core/debug_macros.h"
+#include "core/ds/list.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>

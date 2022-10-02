@@ -1,7 +1,7 @@
+#include "lexer/token.h"
 #include "core/errors.h"
 #include "core/state.h"
 #include "core/memory.h"
-#include "lexer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

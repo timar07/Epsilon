@@ -1,5 +1,4 @@
 #include "core/ds/list.h"
-#include "lexer.h"
 #include "core/memory.h"
 #include <stdio.h>
 

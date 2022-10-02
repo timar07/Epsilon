@@ -1,10 +1,8 @@
-#ifndef EPS_LEXER
-#	define EPS_LEXER
+#ifndef EPS_TOKEN
+#   define EPS_TOKEN
 
-#include "core/object.h"
-#include "core/ds/list.h"
 #include "core/input.h"
-#include <stddef.h> /* size_t */
+#include <stddef.h>
 
 typedef enum {
 	L_PAREN = 0,
@@ -119,10 +117,10 @@ _EpsDbg_GetTokenTypeString(Eps_TokenType toktype);
 void
 _EpsDbg_TokenDump(Eps_Token *tok);
 
+Eps_Token *
+Eps_CreateToken(Eps_LexState *ls, Eps_TokenType toktype, char lexeme[]);
+
 void
 Eps_DestroyToken(Eps_Token *tok);
-
-EpsList *
-Eps_Lex(Eps_Input* input);
 
 #endif

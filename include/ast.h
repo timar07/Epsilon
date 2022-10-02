@@ -1,7 +1,9 @@
 #ifndef EPS_AST
 #   define EPS_AST
 
-#include "lexer.h"
+#include "lexer/token.h"
+#include "core/ds/list.h"
+#include "core/object.h"
 
 typedef struct Eps_AstPrimaryNode Eps_AstPrimaryNode;
 typedef struct Eps_AstUnaryNode Eps_AstUnaryNode;
@@ -46,10 +48,10 @@ struct Eps_AstPrimaryNode {
     } type;
 
     union {
-        Eps_Call    *func;
-        Eps_Token   *identifier;
-        Eps_Object  *literal;
-        Eps_AstNode *expr; // for parenthesized expressions
+        Eps_Call    *func;       // function call
+        Eps_Token   *identifier; // variable
+        Eps_Object  *literal;    // literal value
+        Eps_AstNode *expr;       // for parenthesized expressions
     };
 };
 

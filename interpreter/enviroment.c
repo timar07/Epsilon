@@ -1,5 +1,6 @@
 #include "interpreter/enviroment.h"
 #include "core/ds/dict.h"
+#include "core/object.h"
 #include "core/memory.h"
 #include <stdio.h>
 

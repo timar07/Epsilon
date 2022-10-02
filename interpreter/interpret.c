@@ -2,7 +2,6 @@
 #include "interpreter/enviroment.h"
 #include "interpreter/statements.h"
 #include "parser.h"
-#include "lexer.h"
 #include "core/memory.h"
 #include "core/debug_macros.h"
 #include <string.h>

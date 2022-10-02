@@ -1,7 +1,7 @@
 #ifndef EPS_ERRORS
 #   define EPS_ERRORS
 
-#include "lexer.h"
+#include "lexer/token.h"
 #include <stdbool.h>
 
 #define MAX_ERROR_MSG_LEN 80

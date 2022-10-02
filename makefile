@@ -7,7 +7,7 @@ EXEC = epsilon
 
 SRCMODULES = core/errors.c core/input.c core/memory.c \
 			 core/ds/list.c core/ds/dict.c core/object.c\
-			 lexer/lexer.c \
+			 lexer/lexer.c lexer/token.c \
 			 parser/parser.c \
 			 interpreter/interpret.c interpreter/enviroment.c \
 			 interpreter/statements.c interpreter/expressions.c \

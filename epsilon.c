@@ -1,6 +1,6 @@
 #include "interpreter/interpret.h"
 #include "parser.h"
-#include "lexer.h"
+#include "lexer/lexer.h"
 #include "core/ds/dict.h"
 #include "core/ds/list.h"
 #include "core/errors.h"
