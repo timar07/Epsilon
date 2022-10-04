@@ -1,6 +1,6 @@
 CC = gcc
 # Release flags
-RELFLAGS = -Wall -I./include/ -O3
+RELFLAGS = -Wall -I./include/
 # Debug flags
 DBGFLAGS = -Wall -I./include/ -O0 -g -D EPS_DBG
 EXEC = epsilon
