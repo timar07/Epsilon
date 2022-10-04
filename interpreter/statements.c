@@ -119,7 +119,11 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
 static StmtResult *
 visit_return(Eps_Env *env, Eps_StatementReturn *stmt)
 {
-    return stmt_res_return(Eps_EvalExpr(env, stmt->expr), stmt);
+    // Check if there is an expression in return statement
+    if (stmt->expr != NULL)
+        return stmt_res_return(Eps_EvalExpr(env, stmt->expr), stmt);
+
+    return NULL;
 }
 
 static StmtResult *
