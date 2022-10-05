@@ -10,6 +10,8 @@
 #include "core/memory.h"
 #include <string.h>
 
+#define EXPRESSION_GUARD() if (EpsErr_WasError()) return NULL;
+
 // *  - Utils -
 static Eps_Object *
 create_number(double val)
@@ -64,6 +66,7 @@ Eps_EvalExpr(Eps_Env *env, Eps_Expression* expr);
 static Eps_Object *
 visit_ternary(Eps_Env *env, Eps_AstTernaryNode* node)
 {
+    EXPRESSION_GUARD();
     _DEBUG("%*sTERNARY\n", 8, "");
     Eps_Object *cond = Eps_EvalExpr(env, node->cond);
 
@@ -82,15 +85,13 @@ visit_ternary(Eps_Env *env, Eps_AstTernaryNode* node)
 static Eps_Object *
 visit_binary(Eps_Env *env, Eps_AstBinNode* node)
 {
+    EXPRESSION_GUARD();
+
     _DEBUG("%*sBINARY %s\n", 8, "",
         _EpsDbg_GetTokenTypeString(node->operator->toktype));
 
     Eps_Object *left = Eps_EvalExpr(env, node->left);
     Eps_Object *right = Eps_EvalExpr(env, node->right);
-
-    if (left->type == OBJ_VOID || right->type == OBJ_VOID) {
-        return create_void();
-    }
 
     if (left->type == OBJ_REAL && right->type == OBJ_REAL) {
         double lval = *(double *)left->value;
@@ -162,12 +163,9 @@ visit_binary(Eps_Env *env, Eps_AstBinNode* node)
 static Eps_Object *
 visit_unary(Eps_Env *env, Eps_AstUnaryNode* node)
 {
+    EXPRESSION_GUARD();
     _DEBUG("%*sUNARY\n", 8, "");
     Eps_Object *right = Eps_EvalExpr(env, node->right);
-
-    if (right->type == OBJ_VOID) {
-        return create_void();
-    }
 
     switch (node->operator->toktype) {
         case MINUS:
@@ -280,6 +278,7 @@ visit_call(Eps_Env *env, Eps_AstPrimaryNode *node)
 static Eps_Object *
 visit_primary(Eps_Env *env, Eps_AstPrimaryNode *node)
 {
+    EXPRESSION_GUARD();
     _DEBUG("%*sPRIMARY, type=%u\n", 8, "", node->type);
     switch (node->type) {
         case PRIMARY_LIT:
@@ -320,6 +319,7 @@ visit_primary(Eps_Env *env, Eps_AstPrimaryNode *node)
 Eps_Object *
 Eps_EvalExpr(Eps_Env *env, Eps_Expression* expr)
 {
+    EXPRESSION_GUARD();
     _DEBUG("    EXPRESSION:\n");
     switch (expr->type) {
         case NODE_TERNARY:
