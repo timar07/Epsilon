@@ -121,12 +121,9 @@ match(Parser *self, Eps_TokenType tok)
 }
 
 // Synchronization routine
-// FIXME: segfault?!
 static void
 synchronize(Parser *self)
 {
-    advance(self);
-
     while (current(self)->toktype != T_EOF) {
         if (prev(self)->toktype == SEMICOLON)
             return;
@@ -138,8 +135,6 @@ synchronize(Parser *self)
             case CONST:
             case FUNC:
                 return;
-            default:
-                break;
         }
 
         advance(self);
