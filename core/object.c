@@ -1,6 +1,7 @@
 #include "core/object.h"
 #include "core/memory.h"
 #include <string.h>
+#include <stdio.h>
 
 static const char * obj_strings[] = {
     "real",
@@ -53,4 +54,41 @@ const char *
 EpsDbg_GetObjectTypeString(Eps_ObjectType obj_type)
 {
     return obj_strings[obj_type];
+}
+
+static Eps_Object *
+bool_to_string(Eps_Object *obj)
+{
+    return EpsObject_Create(
+        OBJ_STRING,
+        strdup(*(bool *)obj->value ? "true": "false"),
+        obj->mut
+    );
+}
+
+static Eps_Object *
+real_to_string(Eps_Object *obj)
+{
+    size_t len;
+    char *str;
+
+    len = (size_t)snprintf(NULL, 0, "%f", *(double *)obj->value) + 1;
+    str = EpsMem_Alloc(len);
+    snprintf(str, len, "%g", *(double *)obj->value);
+
+    return EpsObject_Create(OBJ_STRING, str, obj->mut);
+}
+
+Eps_Object *
+EpsObject_ToString(Eps_Object *obj)
+{
+    switch (obj->type) {
+        case OBJ_REAL:
+            return real_to_string(obj);
+        case OBJ_BOOL:
+            return bool_to_string(obj);
+        case OBJ_STRING: // nothing to do, just clone
+            return EpsObject_Clone(obj);
+        default: return NULL;
+    }
 }

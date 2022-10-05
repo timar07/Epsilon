@@ -177,7 +177,7 @@ static bool
 is_type_specifier(Eps_TokenType tok)
 {
     switch (tok) {
-        case REAL: case STRING:
+        case REAL: case STR:
         case BOOL: case VOID:
             return true;
         default: break;
@@ -288,7 +288,7 @@ create_call_node(Eps_Token *identifier, EpsList *args)
 static char *
 expr_to_string(Eps_Expression *expr)
 {
-    char *result = EpsMem_Alloc(sizeof(char)*80);
+    char *result = EpsMem_Alloc(sizeof(char)*256);
 
     switch (expr->type) {
         case NODE_PRIMARY:
@@ -458,6 +458,7 @@ primary(Parser *self)
 {
     if (match(self, T_EOF)) {
         EpsErr_Fatal("unexpected end of file");
+        return NULL;
     }
 
     Eps_Expression* expr = create_expression();
@@ -513,7 +514,7 @@ static Eps_Expression*
 unary(Parser *self)
 {
     // unary = '-' primary;
-    if (check(self, MINUS)) {
+    if (check(self, MINUS) || is_type_specifier(current(self)->toktype)) {
         Eps_Expression* expr = create_expression();
 
         Eps_Token* operator = advance(self);

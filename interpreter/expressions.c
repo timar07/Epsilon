@@ -41,6 +41,22 @@ create_void()
     return EpsObject_Create(OBJ_VOID, NULL, true);
 }
 
+static Eps_Object *
+concat_strings(Eps_Object *left, Eps_Object *right)
+{
+    size_t len = 80;
+    char *buff = EpsMem_Alloc(sizeof(char)*len);
+
+    sprintf(
+        buff,
+        "%s%s",
+        (char *)left->value,
+        (char *)right->value
+    );
+
+    return create_string(buff);
+}
+
 // * - Evaluating Expressions -
 Eps_Object *
 Eps_EvalExpr(Eps_Env *env, Eps_Expression* expr);
@@ -66,7 +82,9 @@ visit_ternary(Eps_Env *env, Eps_AstTernaryNode* node)
 static Eps_Object *
 visit_binary(Eps_Env *env, Eps_AstBinNode* node)
 {
-    _DEBUG("%*sBINARY\n", 8, "");
+    _DEBUG("%*sBINARY %s\n", 8, "",
+        _EpsDbg_GetTokenTypeString(node->operator->toktype));
+
     Eps_Object *left = Eps_EvalExpr(env, node->left);
     Eps_Object *right = Eps_EvalExpr(env, node->right);
 
@@ -115,20 +133,8 @@ visit_binary(Eps_Env *env, Eps_AstBinNode* node)
     else if (left->type == OBJ_STRING && right->type == OBJ_STRING) {
         switch (node->operator->toktype) {
             case PLUS:
-            {
-                // concatenating strings
-                char *buff = EpsMem_Alloc(sizeof(char)*(strlen(left->value)+strlen(right->value)));
-                sprintf(
-                    buff,
-                    "%s%s",
-                    (char *)left->value,
-                    (char *)right->value
-                );
-
-                return create_string(buff);
-            }
-            case MINUS: case STAR:
-            case SLASH:
+                return concat_strings(left, right);
+            default:
             {
                 EpsErr_RuntimeError(
                     &node->operator->ls,
@@ -136,8 +142,6 @@ visit_binary(Eps_Env *env, Eps_AstBinNode* node)
                     node->operator->lexeme
                 );
             }
-
-            default: break;
         }
     }
     else {
@@ -165,19 +169,6 @@ visit_unary(Eps_Env *env, Eps_AstUnaryNode* node)
         return create_void();
     }
 
-    switch (right->type) {
-        case OBJ_STRING:
-        {
-            EpsErr_RuntimeError(
-                &node->operator->ls,
-                "Cannot apply unary operator to operand type '%s'",
-                EpsDbg_GetObjectTypeString(right->type)
-            );
-        } break;
-        case OBJ_REAL: break;
-        default: break;
-    }
-
     switch (node->operator->toktype) {
         case MINUS:
         {
@@ -194,7 +185,16 @@ visit_unary(Eps_Env *env, Eps_AstUnaryNode* node)
 
             return create_number(- *(double *)right->value);
         } break;
-        default: break;
+        case STR:
+            return EpsObject_ToString(right);
+        default:
+        {
+            EpsErr_RuntimeError(
+                &node->operator->ls,
+                "unknown operator '%s'",
+                node->operator->lexeme
+            );
+        };
     }
 
     EpsObject_Destroy(right);

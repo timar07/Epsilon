@@ -212,6 +212,9 @@ identifier(Eps_LexState *ls)
     else if (lexeme_cmp(lexeme, "real")) {
         return REAL;
     }
+    else if (lexeme_cmp(lexeme, "str")) {
+        return STR;
+    }
     else if (lexeme_cmp(lexeme, "bool")) {
         return BOOL;
     }

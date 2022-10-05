@@ -28,4 +28,9 @@ EpsDbg_GetObjectTypeString(Eps_ObjectType obj_type);
 void
 EpsObject_Destroy(Eps_Object *obj);
 
+// Converts object to string.
+// Note: if OBJ_STRING passed, returns clone of this object.
+Eps_Object *
+EpsObject_ToString(Eps_Object *obj);
+
 #endif

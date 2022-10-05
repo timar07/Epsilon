@@ -90,7 +90,6 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
 {
     Eps_Object *val = Eps_EvalExpr(env, stmt->expr);
 
-
     switch (val->type) {
         case OBJ_STRING:
             printf("%s\n", (char *)val->value);
@@ -101,7 +100,7 @@ visit_output(Eps_Env *env, Eps_StatementOutput *stmt)
         case OBJ_BOOL:
             printf(
                 "%s\n",
-                *(bool *)val->value ? "true": "false"
+                (char *)EpsObject_ToString(val)->value
             );
         break;
         case OBJ_VOID:
