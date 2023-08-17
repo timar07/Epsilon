@@ -2,7 +2,7 @@ CC = gcc
 # Release flags
 RELFLAGS = -Wall -I./include/
 # Debug flags
-DBGFLAGS = -Wall -I./include/ -O0 -g
+DBGFLAGS = -Wall -I./include/ -O0 -g -DEPS_DBG
 EXEC = epsilon
 
 SRCMODULES = core/errors.c core/input.c core/memory.c \
