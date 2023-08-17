@@ -67,6 +67,13 @@ current(Eps_LexState *ls)
     return char_at(ls, ls->current);
 }
 
+// Return prev char
+static int
+prev(Eps_LexState *ls)
+{
+    return char_at(ls, ls->current-1);
+}
+
 // Check if current char matches expected 'c',
 // if so, consume the character
 static bool
@@ -78,6 +85,25 @@ match(Eps_LexState *ls, char c)
     }
 
     return false;
+}
+
+// Check if next char sequence matches 'word',
+// if so, consume that sequence
+static bool
+match_word(Eps_LexState *ls, const char word[]) {
+    size_t i = 0;
+    size_t len = strlen(word);
+
+    while (i < len) {
+        if (char_at(ls, ls->current + i) == word[i]) {
+            i++;
+        } else {
+            return false;
+        }
+    }
+
+    ls->current += i;
+    return true;
 }
 
 // Return substring from a current file
@@ -160,69 +186,124 @@ string(Eps_LexState *ls)
     return create_token(ls, STRING);
 }
 
-// TODO: Optimize
 static Eps_TokenType
 identifier(Eps_LexState *ls)
 {
-    size_t start = ls->end-1;
-    char* lexeme;
-
     while (isalnum(current(ls)))
         advance(ls);
 
-    lexeme = get_substr(ls, start, ls->end);
+    return IDENTIFIER;
+}
+
+static Eps_TokenType
+keyword(Eps_LexState *ls)
+{
+    size_t start = ls->end-1;
 
     /* Checking if that's an keyword */
-    if (lexeme_cmp(lexeme, "and")) {
-        return AND;
-    }
-    if (lexeme_cmp(lexeme, "const")) {
-        return CONST;
-    }
-    else if (lexeme_cmp(lexeme, "func")) {
-        return FUNC;
-    }
-    else if (lexeme_cmp(lexeme, "else")) {
-        return ELSE;
-    }
-    else if (lexeme_cmp(lexeme, "false")) {
-        return FALSE;
-    }
-    else if (lexeme_cmp(lexeme, "if")) {
-        return IF;
-    }
-    else if (lexeme_cmp(lexeme, "let")) {
-        return LET;
-    }
-    else if (lexeme_cmp(lexeme, "void")) {
-        return VOID;
-    }
-    else if (lexeme_cmp(lexeme, "or")) {
-        return OR;
-    }
-    else if (lexeme_cmp(lexeme, "not")) {
-        return NOT;
-    }
-    else if (lexeme_cmp(lexeme, "output")) {
-        return OUTPUT;
-    }
-    else if (lexeme_cmp(lexeme, "return")) {
-        return RETURN;
-    }
-    else if (lexeme_cmp(lexeme, "real")) {
-        return REAL;
-    }
-    else if (lexeme_cmp(lexeme, "str")) {
-        return STR;
-    }
-    else if (lexeme_cmp(lexeme, "bool")) {
-        return BOOL;
-    }
-    else if (lexeme_cmp(lexeme, "true")) {
-        return TRUE;
-    }
-    else { /* otherwise, that's an keyword */
-        return IDENTIFIER;
+    switch (prev(ls)) {
+        case 'a': {
+            if (match_word(ls, "nd")) {
+                return AND;
+            }
+
+            return identifier(ls);
+        }
+        case 'c': {
+            if (match_word(ls, "onst")) {
+                return CONST;
+            }
+
+            return identifier(ls);
+        }
+        case 'f': {
+            if (match_word(ls, "unc")) {
+                return FUNC;
+            }
+            else if (match_word(ls, "alse")) {
+                return FALSE;
+            }
+
+            return identifier(ls);
+        }
+        case 'e': {
+            if (match_word(ls, "lse")) {
+                return ELSE;
+            }
+
+            return identifier(ls);
+        }
+        case 'i': {
+            if (match_word(ls, "f")) {
+                return IF;
+            }
+
+            return identifier(ls);
+        }
+        case 'l': {
+            if (match_word(ls, "et")) {
+                return LET;
+            }
+
+            return identifier(ls);
+        }
+        case 'v': {
+            if (match_word(ls, "oid")) {
+                return VOID;
+            }
+
+            return identifier(ls);
+        }
+        case 'o': {
+            if (match_word(ls, "r")) {
+                return OR;
+            } else if (match_word(ls, "utput")) {
+                return OUTPUT;
+            }
+
+            return identifier(ls);
+        }
+        case 'n': {
+            if (match_word(ls, "ot")) {
+                return NOT;
+            }
+
+            return identifier(ls);
+        }
+        case 'r': {
+            if (match_word(ls, "eturn")) {
+                return RETURN;
+            }
+            else if (match_word(ls, "eal")) {
+                return REAL;
+            }
+            _DEBUG("DEBUG: %c\n", current(ls));
+
+            return identifier(ls);
+        }
+        case 's': {
+            if (match_word(ls, "tr")) {
+                return STR;
+            }
+            return identifier(ls);
+        }
+        case 'b': {
+            if (match_word(ls, "ool")) {
+                return BOOL;
+            }
+
+            return identifier(ls);
+        }
+        case 't': {
+            if (match_word(ls, "rue")) {
+                return TRUE;
+            }
+
+            return identifier(ls);
+        }
+        default: {
+            return identifier(ls);
+        }
     }
 }
 
@@ -327,7 +408,7 @@ get_token(Eps_LexState *ls)
             if (isdigit(c)) { // is it a number literal?
                 t = number(ls);
             } else if (isalpha(c)) { // is it a keyword/identifier?
-                t = create_token(ls, identifier(ls));
+                t = create_token(ls, keyword(ls));
             } else { // otherwise, we don't know what it is
                 t = create_token(ls, ERRORTOKEN);
                 lexerror(&t->ls, "illegal token '%s'", t->lexeme);
