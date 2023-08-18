@@ -263,7 +263,9 @@ visit_assign(Eps_Env *env, Eps_StatementVar *stmt)
 StmtResult *
 Eps_RunStatement(Eps_Env *env, Eps_Statement *stmt)
 {
+#ifdef EPS_DBG
     _DEBUG("STATEMENT: %s\n", _EpsDbg_GetStmtTypeString(stmt->type));
+#endif
 
     switch (stmt->type) {
         case S_EXPR:
